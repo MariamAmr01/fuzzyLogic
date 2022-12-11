@@ -67,15 +67,17 @@ public class Set {
         this.varName=s.varName;
         this.tri= s.tri;
         this.values = s.values;
+        this.mean = s.mean;
     }
+
     @Override
     public String toString() {
-
         return "Set{" +
                 "setName='" + setName + '\'' +
                 ", varName='" + varName + '\'' +
                 ", tri=" + tri +
-                ", values=" + values +
+                ", mean=" + mean +
+                ", setRange=" + setRange +
                 '}';
     }
 }

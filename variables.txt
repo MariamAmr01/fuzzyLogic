@@ -1,0 +1,3 @@
+proj_funding IN [0, 100] 50
+exp_level IN [0, 60] 40
+risk OUT [0, 100]

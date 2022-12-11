@@ -18,7 +18,7 @@ class Range {
     }
 
     public boolean contains(int number) {
-        return (number >= start && number < end);
+        return (number >= start && number <= end);
     }
 
     @Override
@@ -45,7 +45,10 @@ public class Variable {
         this.input = input;
         this.crispVal = crispVal;
     }
+    public Variable()
+    {
 
+    }
 
     public int findSet(String name)
     {
@@ -63,46 +66,62 @@ public class Variable {
             Vector<Point> points = new Vector<>();
             if(sets.get(i).setRange.contains(crispVal))
             {
-
                 Range range1= new Range(sets.get(i).values.get(0).x,sets.get(i).values.get(1).x);
+                Range range2= new Range(sets.get(i).values.get(1).x,sets.get(i).values.get(2).x);
                 if(range1.contains(crispVal)){
                     points.add(sets.get(i).values.get(0));
                     points.add(sets.get(i).values.get(1));
                 }
-                Range range2= new Range(sets.get(i).values.get(1).x,sets.get(i).values.get(2).x);
-                if(range2.contains(crispVal))
+                else if(range2.contains(crispVal))
                 {
                     points.add(sets.get(i).values.get(1));
                     points.add(sets.get(i).values.get(2));
                 }
-
-                if(!sets.get(i).tri)
-                {
-                    Range range3 = new Range(sets.get(i).values.get(2).x,sets.get(i).values.get(3).x);
-                    if(range3.contains(crispVal))
-                    {
+                if (!sets.get(i).tri) {
+                    Range range3 = new Range(sets.get(i).values.get(2).x, sets.get(i).values.get(3).x);
+                    if (range3.contains(crispVal)) {
                         points.add(sets.get(i).values.get(2));
                         points.add(sets.get(i).values.get(3));
                     }
                 }
+                sets.get(i).mean=calcSlope(points);
 
             }
             else
             {
                 sets.get(i).mean=0;
             }
-
-            calcSlope(points);
+            //System.out.println(sets.get(i).mean);
 
         }
 
 
     }
 
-    public int calcSlope(Vector<Point> points)
+    public float calcSlope(Vector<Point> points)
     {
-        return 0;
+        if(points.size()==0) return -1;
+        if(points.get(0).x==crispVal)
+        {
+            return points.get(0).y;
+        }
+        if(points.get(1).x==crispVal)
+        {
+            return points.get(1).y;
+        }
+
+        if(points.get(0).x==points.get(1).x) return 1;
+        if(points.get(0).y==points.get(1).y) return 0;
+
+        float slope = (float)(points.get(1).y-points.get(0).y)/(points.get(1).x-points.get(0).x);
+        float c;
+        if(points.get(0).y==0)
+            c = -(slope*points.get(0).x);
+        else
+            c = -(slope*points.get(1).x);
+        return slope*crispVal+c;
     }
+
     @Override
     public String toString() {
         return "Variable{" +

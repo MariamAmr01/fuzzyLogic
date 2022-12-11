@@ -92,8 +92,9 @@ public class Main {
                 int varIndx = fuzzySystem.finVar(outputVar[1]);
                 int setIndx = fuzzySystem.variables.get(varIndx).findSet(outputVar[2]);
 
-                Set outputSet = new Set(fuzzySystem.variables.get(varIndx).sets.get(setIndx));
+                //Set outputSet = new Set(fuzzySystem.variables.get(varIndx).sets.get(setIndx));
 
+                Set outputSet = fuzzySystem.variables.get(varIndx).sets.get(setIndx);
                 String[] variables = elements[0].split(" ");
 
                 //proj_funding high or exp_level expert
@@ -128,13 +129,11 @@ public class Main {
                         System.out.println("Invalid input");
                         break;
                     }
-                    Set varSet1 = new Set(fuzzySystem.variables.get(varIndx2).sets.get(setIndx2));
+                    Set varSet1 = fuzzySystem.variables.get(varIndx2).sets.get(setIndx2);
                     variableSet.add(varSet1);
                 }
                 Rule rule= new Rule(variableSet,operator,outputSet);
                 fuzzySystem.rules.add(rule);
-
-                //String[] elements2 = line.split(" ");
 
             }
         } catch (IOException e) {
@@ -150,9 +149,13 @@ public class Main {
         readVar(fuzzySystem);
         readSets(fuzzySystem);
         readRule(fuzzySystem);
-        for (int i = 0; i < fuzzySystem.rules.size(); i++) {
 
-            System.out.println(fuzzySystem.rules.get(i));
+        fuzzySystem.fuzzification();
+        fuzzySystem.inference();
+
+        for (int i = 0; i < fuzzySystem.variables.size(); i++) {
+
+            System.out.println(fuzzySystem.variables.get(i));
         }
     }
 
