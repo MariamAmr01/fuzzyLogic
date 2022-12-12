@@ -92,12 +92,10 @@ public class Main {
                 int varIndx = fuzzySystem.finVar(outputVar[1]);
                 int setIndx = fuzzySystem.variables.get(varIndx).findSet(outputVar[2]);
 
-                //Set outputSet = new Set(fuzzySystem.variables.get(varIndx).sets.get(setIndx));
 
                 Set outputSet = fuzzySystem.variables.get(varIndx).sets.get(setIndx);
                 String[] variables = elements[0].split(" ");
 
-                //proj_funding high or exp_level expert
                 Vector<String> operator = new Vector<>();
                 Vector<Set> variableSet = new Vector<>();
 
@@ -150,13 +148,15 @@ public class Main {
         readSets(fuzzySystem);
         readRule(fuzzySystem);
 
-        fuzzySystem.fuzzification();
-        fuzzySystem.inference();
+        fuzzySystem.run();
+        fuzzySystem.printOutput();
 
-        for (int i = 0; i < fuzzySystem.variables.size(); i++) {
+        //System.out.println("---------------------");
 
-            System.out.println(fuzzySystem.variables.get(i));
-        }
+//        for (int i = 0; i < fuzzySystem.variables.size(); i++) {
+//
+//            System.out.println(fuzzySystem.variables.get(i));
+//        }
     }
 
 }

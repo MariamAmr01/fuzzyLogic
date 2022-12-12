@@ -5,6 +5,8 @@ public class FuzzySystem {
     public Vector<Rule> rules;
     String name;
     String description;
+    //->
+    int index = -1;
 
     public FuzzySystem()
     {
@@ -39,15 +41,9 @@ public class FuzzySystem {
                 temp.add(new Rule(rules.get(k)));
             }
 
-            Vector<Integer> changedIndex= new Vector<>();
-            Vector<Float> changedValue= new Vector<>();
-
             int indx = temp.get(i).operators.indexOf("not");
             if(indx != -1)
             {
-                changedValue.add(temp.get(i).variableSet.get(indx).mean);
-                changedIndex.add(indx);
-
                 temp.get(i).variableSet.get(indx).mean=1-temp.get(i).variableSet.get(indx).mean;
                 temp.get(i).operators.remove(indx);
             }
@@ -56,8 +52,6 @@ public class FuzzySystem {
                 int indxAndNot = temp.get(i).operators.indexOf("and_not");
                 if(indxAndNot != -1)
                 {
-                    changedValue.add(temp.get(i).variableSet.get(indxAndNot+1).mean);
-                    changedIndex.add(indxAndNot+1);
                     temp.get(i).variableSet.get(indxAndNot+1).mean=1-temp.get(i).variableSet.get(indxAndNot+1).mean;
                     temp.get(i).operators.set(indxAndNot,"and");
                     continue;
@@ -65,9 +59,6 @@ public class FuzzySystem {
                 int indxOrNot = temp.get(i).operators.indexOf("or_not");
                 if(indxOrNot != -1)
                 {
-                    changedValue.add(temp.get(i).variableSet.get(indxOrNot+1).mean);
-                    changedIndex.add(indxOrNot+1);
-
                     temp.get(i).variableSet.get(indxOrNot+1).mean=1-temp.get(i).variableSet.get(indxOrNot+1).mean;
                     temp.get(i).operators.set(indxOrNot,"or");
                     continue;
@@ -95,7 +86,56 @@ public class FuzzySystem {
                 }
 
             }
-            rules.get(i).outputSet.mean= temp.get(i).variableSet.get(0).mean;
+
+            rules.get(i).outputSet.mean = Float.max(rules.get(i).outputSet.mean, temp.get(i).variableSet.get(0).mean);
         }
+
+    }
+
+    public void defuzzification(){
+        float z = 0, m = 0;
+
+        for (int i = 0; i < variables.size(); i++) {
+            if(!variables.get(i).input){
+
+                for (int j = 0; j < variables.get(i).sets.size(); j++) {
+                    z += variables.get(i).sets.get(j).calculateC() * variables.get(i).sets.get(j).mean;
+                    m += variables.get(i).sets.get(j).mean;
+
+                }
+                z = z/m;
+
+                variables.get(i).crispVal = z;
+                variables.get(i).input = true;
+                index = i;
+                run();
+                break;
+
+            }
+        }
+
+    }
+
+    public void run(){
+        fuzzification();
+        inference();
+        defuzzification();
+
+    }
+
+    public void printOutput(){
+        System.out.println("Fuzzification => done");
+        System.out.println("Inference => done");
+        System.out.println("Defuzzification => done");
+
+        for (int j = 0; j < variables.get(index).sets.size(); j++) {
+            if(variables.get(index).sets.get(j).setRange.contains(variables.get(index).crispVal) )
+            {
+                System.out.println("The predicted " + variables.get(index).sets.get(j).varName + " is " +
+                        variables.get(index).sets.get(j).setName + " (" + variables.get(index).crispVal + ")" );
+
+            }
+        }
+        System.out.println("===============================");
     }
 }

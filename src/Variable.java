@@ -17,7 +17,7 @@ class Range {
         this.end = r.end;
     }
 
-    public boolean contains(int number) {
+    public boolean contains(float number) {
         return (number >= start && number <= end);
     }
 
@@ -34,7 +34,7 @@ public class Variable {
     public String name;
     public Range range;
     public boolean input;
-    public int crispVal;
+    public float crispVal;
     public Vector<Set> sets;
 
     public Variable(String name, Range range, boolean input, int crispVal)
@@ -121,7 +121,6 @@ public class Variable {
             c = -(slope*points.get(1).x);
         return slope*crispVal+c;
     }
-
     @Override
     public String toString() {
         return "Variable{" +

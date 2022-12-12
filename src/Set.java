@@ -24,6 +24,8 @@ public class Set {
     public boolean tri;
     Vector<Point> values = new Vector<>();
     public float mean;
+    public float centroid;
+
     Range setRange = new Range();
 
     public Set(String setName, String varName, boolean tri, Vector<Integer> values)
@@ -70,6 +72,15 @@ public class Set {
         this.mean = s.mean;
     }
 
+    // For output var
+    public float calculateC(){
+        float sum = 0;
+        for (int i = 0; i < values.size(); i++) {
+            sum += values.get(i).x;
+        }
+        centroid = sum/values.size();
+        return sum/values.size();
+    }
     @Override
     public String toString() {
         return "Set{" +
