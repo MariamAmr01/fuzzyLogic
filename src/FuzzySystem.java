@@ -128,14 +128,31 @@ public class FuzzySystem {
         System.out.println("Inference => done");
         System.out.println("Defuzzification => done");
 
-        for (int j = 0; j < variables.get(index).sets.size(); j++) {
-            if(variables.get(index).sets.get(j).setRange.contains(variables.get(index).crispVal) )
+        Vector<Integer> indexSets = new Vector<>();
+        for (int j = 0; j < variables.get(index).sets.size(); j++)
+        {
+            if(variables.get(index).sets.get(j).setRange.contains(variables.get(index).crispVal))
             {
-                System.out.println("The predicted " + variables.get(index).sets.get(j).varName + " is " +
-                        variables.get(index).sets.get(j).setName + " (" + variables.get(index).crispVal + ")" );
-
+                indexSets.add(j);
             }
         }
+
+        int indexMin = 0;
+
+        float minDis = Float.MAX_VALUE;
+        for (int i = 0; i < indexSets.size(); i++)
+        {
+            float dis = Math.abs(variables.get(index).sets.get(indexSets.get(i)).centroid - variables.get(index).crispVal);
+
+            if(dis < minDis){
+                indexMin = indexSets.get(i);
+                minDis = dis;
+            }
+        }
+
+        System.out.println("The predicted " + variables.get(index).sets.get(indexMin).varName + " is " +
+                variables.get(index).sets.get(indexMin).setName + " (" + variables.get(index).crispVal + ")" );
+
         System.out.println("===============================");
     }
 }
