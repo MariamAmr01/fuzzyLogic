@@ -37,13 +37,13 @@ public class Variable {
     public float crispVal;
     public Vector<Set> sets;
 
-    public Variable(String name, Range range, boolean input, int crispVal)
+    public Variable(String name, Range range, boolean input)
     {
         this.name = name;
         this.range = new Range(range);
         this.sets = new Vector<>();
         this.input = input;
-        this.crispVal = crispVal;
+//        this.crispVal = crispVal;
     }
     public Variable()
     {

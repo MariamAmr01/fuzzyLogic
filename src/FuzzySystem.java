@@ -1,3 +1,4 @@
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
@@ -23,6 +24,18 @@ public class FuzzySystem {
                 return i;
         }
         return -1;
+    }
+
+    public Vector<Variable> getVariables() {
+        Vector<Variable> vars = new Vector<>();
+
+        for(int i=0; i<variables.size(); i++){
+            if(variables.get(i).input){
+                vars.add(variables.get(i));
+            }
+        }
+
+        return vars;
     }
 
     public void fuzzification()
@@ -157,9 +170,10 @@ public class FuzzySystem {
             }
         }
         try {
-            FileWriter fileWriter=  new FileWriter(filePath);
+            BufferedWriter fileWriter=  new BufferedWriter(new FileWriter(filePath, true));
             fileWriter.write("The predicted " + variables.get(index).sets.get(indexMin).varName + " is " +
                     variables.get(index).sets.get(indexMin).setName + " (" + variables.get(index).crispVal + ")" );
+            fileWriter.flush();
             fileWriter.close();
         }
         catch (IOException e) {

@@ -16,17 +16,17 @@ public class Main {
                 if (line == null) break;
 
                 String[] elements = line.split(" ");
-                int crispVal = 0;
+//                int crispVal = 0;
                 boolean input = false;
                 if (elements[1].equals("IN")) {
                     input = true;
-                    crispVal = Integer.parseInt(elements[4]);
+//                    crispVal = Integer.parseInt(elements[4]);
                 }
 
                 int start = Integer.parseInt(elements[2].substring(1, elements[2].length() - 1));
                 int end = Integer.parseInt(elements[3].substring(0, elements[3].length() - 1));
                 Range range = new Range(start, end);
-                Variable variable = new Variable(elements[0], range, input, crispVal);
+                Variable variable = new Variable(elements[0], range, input);
                 fuzzySystem.variables.add(variable);
             }
         } catch (IOException e) {
@@ -143,8 +143,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-        new GuiRepresentation();
+//        new GuiRepresentation();
 
+        new GuiMenu();
         //System.out.println("---------------------");
 
 //        for (int i = 0; i < fuzzySystem.variables.size(); i++) {
