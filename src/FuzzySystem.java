@@ -158,7 +158,7 @@ public class FuzzySystem {
         }
 
         int indexMin = 0;
-
+        String str = "";
         float minDis = Float.MAX_VALUE;
         for (int i = 0; i < indexSets.size(); i++)
         {
@@ -171,10 +171,12 @@ public class FuzzySystem {
         }
         try {
             BufferedWriter fileWriter=  new BufferedWriter(new FileWriter(filePath, true));
-            fileWriter.write("The predicted " + variables.get(index).sets.get(indexMin).varName + " is " +
-                    variables.get(index).sets.get(indexMin).setName + " (" + variables.get(index).crispVal + ")" );
+            str = "The predicted " + variables.get(index).sets.get(indexMin).varName + " is " +
+                    variables.get(index).sets.get(indexMin).setName + " (" + variables.get(index).crispVal + ")\n";
+            fileWriter.write(str);
             fileWriter.flush();
             fileWriter.close();
+            return str;
         }
         catch (IOException e) {
             e.printStackTrace();

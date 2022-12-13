@@ -143,9 +143,10 @@ public class Main {
 
     public static void main(String[] args) {
 
-//        new GuiRepresentation();
+        new MainGUI();
+//       new GuiRepresentation();
 
-        new GuiMenu();
+        //new GuiMenu();
         //System.out.println("---------------------");
 
 //        for (int i = 0; i < fuzzySystem.variables.size(); i++) {

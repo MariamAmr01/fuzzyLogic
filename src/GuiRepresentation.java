@@ -2,27 +2,37 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Vector;
 
 public class GuiRepresentation extends JFrame implements ActionListener
 {
 
-    FuzzySystem fuzzySystem = new FuzzySystem();
+    FuzzySystem fuzzySystem;
 
     JButton browseVariables;
     JButton browseSets;
     JButton browseRules;
 
-    JButton saveOutputFile;
+    JButton saveOutputFile, addCrispValues;
 
     JLabel browseLabel;
     JLabel saveLabel;
 
+    JFrame run;
+
     Vector<String> paths= new Vector<>();
+    Vector<JTextField> textFields;
+    Vector<Variable> vars;
+
+    String out = "";
+    String path;
     boolean browse, save, variable, set, rule;
 
-    public GuiRepresentation()  {
+    public GuiRepresentation(FuzzySystem fuzzySystem)  {
         browse = false;
         save = false;
         variable = false;
@@ -32,9 +42,10 @@ public class GuiRepresentation extends JFrame implements ActionListener
         paths.add("");
         paths.add("");
         paths.add("");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(500, 400);
         this.setTitle("Fuzzy System");
+        this.fuzzySystem = fuzzySystem;
 
     }
 
@@ -45,7 +56,7 @@ public class GuiRepresentation extends JFrame implements ActionListener
         browseSets = new JButton("Select sets file");
         browseRules = new JButton("Select rules file");
 
-        saveOutputFile = new JButton("Save output file");
+        saveOutputFile = new JButton("Save output file and RUN");
 
         browseVariables.setBounds(150, 50, 200, 40);
         browseSets.setBounds(150, 100, 200, 40);
@@ -126,7 +137,69 @@ public class GuiRepresentation extends JFrame implements ActionListener
         }
     }
 
+    public void CreateRunFrame(){
+
+        run = new JFrame();
+        textFields = new Vector<>();
+        run.setTitle("Run the simulation on crisp values");
+        run.setSize(600, 300);
+
+        int labelBoundaries = 10;
+        int textFieldBoundaries = 40;
+
+        vars = fuzzySystem.getVariables();
+        for(int i=0; i< vars.size(); i++){
+            JLabel label1 = new JLabel("Enter the Crisp value of "+ vars.get(i).name);
+            label1.setBounds(50, labelBoundaries, 500, 30);
+            labelBoundaries+= 65;
+            JTextField txt = new JTextField();
+            txt.setBounds(50, textFieldBoundaries, 350, 40);
+            textFieldBoundaries+=60;
+            textFields.add(txt);
+            run.add(label1);
+            run.add(txt);
+
+        }
+
+        run.setLayout(null);
+        run.setVisible(true);
+
+        addCrispValues = new JButton("Add");
+        addCrispValues.setBounds(50, textFieldBoundaries-10, 100, 30);
+        run.add(addCrispValues);
+        addCrispValues.addActionListener(this);
+
+    }
+
+    public void addCrispValuesAction(String path) throws IOException
+    {
+        out += '\n';
+        for(int i=0; i< textFields.size(); i++){
+            out += vars.get(i).name + ": " + textFields.get(i).getText() + "\n";
+            vars.get(i).crispVal = Float.parseFloat(textFields.get(i).getText());
+        }
+
+        fuzzySystem.run();
+        BufferedWriter fileWriter=  new BufferedWriter(new FileWriter(path, true));
+        fileWriter.write(out);
+        fileWriter.flush();
+        fileWriter.close();
+        out += fuzzySystem.printOutput(path);
+
+        JOptionPane.showMessageDialog(null, out,"Output Result", JOptionPane.INFORMATION_MESSAGE);
+
+        run.dispose();
+        out= "";
+    }
     public void actionPerformed(ActionEvent event) {
+
+        if (event.getSource() == addCrispValues) {
+            try {
+                addCrispValuesAction(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
 
         if (event.getSource() == browseVariables) {
@@ -139,6 +212,7 @@ public class GuiRepresentation extends JFrame implements ActionListener
             performAction("browseSets");
         }
 
+
         else if (event.getSource() == saveOutputFile) {
 
             JFileChooser fileChooser = new JFileChooser();
@@ -150,26 +224,23 @@ public class GuiRepresentation extends JFrame implements ActionListener
 
             if (response == JFileChooser.APPROVE_OPTION) {
                 save = true;
-                String path = fileChooser.getSelectedFile().getAbsolutePath();
+                path = fileChooser.getSelectedFile().getAbsolutePath();
                 saveLabel.setText("File Saved Successfully");
                 saveLabel.setVisible(true);
-                    if (browse && save) {
-                        browse = false;
-                        save = false;
-                        if(variable&&rule&&set)
-                        {
-                            Main.readVar(fuzzySystem, paths.get(0));
-                            Main.readSets(fuzzySystem, paths.get(1));
-                            Main.readRule(fuzzySystem, paths.get(2));
-                            fuzzySystem.run();
-                            fuzzySystem.printOutput(path);
-                        }
+                if (browse && save) {
+                    browse = false;
+                    save = false;
+                    if (variable && rule && set) {
+                        Main.readVar(fuzzySystem, paths.get(0));
+                        Main.readSets(fuzzySystem, paths.get(1));
+                        Main.readRule(fuzzySystem, paths.get(2));
+                        CreateRunFrame();
                     }
-                    else{
-                        save = false;
-                        saveLabel.setText("Please Select the place of the input file");
-                        saveLabel.setVisible(true);
-                    }
+                } else {
+                    save = false;
+                    saveLabel.setText("Please Select the place of the input file");
+                    saveLabel.setVisible(true);
+                }
 
 
             } else {
@@ -177,6 +248,7 @@ public class GuiRepresentation extends JFrame implements ActionListener
                 saveLabel.setText("Please Select the place of the output file");
                 saveLabel.setVisible(true);
             }
+
         }
     }
 

@@ -8,20 +8,28 @@ import java.util.Vector;
 
 public class GuiMenu extends JFrame implements ActionListener {
 
-    FuzzySystem fuzzySystem = new FuzzySystem();
+    FuzzySystem fuzzySystem;
     String allVariables= "", allRules= "", allsets= "", out= "";
     boolean varNameAdded = false, variablesAdded= false, rulesAdded = false, setsAdded = false;
     JButton variables, sets, rules, addVariableButton, addRuleButton, submit, addSetButton, submitSets, runSimulation, addCrispValues;
-    JFrame addVariable, addRule, addSet, run;
+    JFrame addVariable, addRule, addSet, run, output;
     JTextField variablesText, rulesText, setsText, variableName;
     Vector<JTextField> textFields;
     Vector<Variable> vars;
 
-    public GuiMenu() {
+    public GuiMenu(FuzzySystem fuzzySystem) throws IOException {
         initComponents();
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(500, 400);
         this.setTitle("Fuzzy System");
+        this.fuzzySystem = fuzzySystem;
+
+        /// --->
+        new FileWriter("out.txt", false).close();
+        new FileWriter("variables.txt", false).close();
+        new FileWriter("sets.txt", false).close();
+        new FileWriter("rules.txt", false).close();
+
 
     }
 
@@ -277,17 +285,29 @@ public class GuiMenu extends JFrame implements ActionListener {
 
     public void addCrispValuesAction() throws IOException
     {
-
+        out += '\n';
         for(int i=0; i< textFields.size(); i++){
             out += vars.get(i).name + ": " + textFields.get(i).getText() + "\n";
+            vars.get(i).crispVal = Float.parseFloat(textFields.get(i).getText());
         }
 
         fuzzySystem.run();
-        fuzzySystem.printOutput("out.txt");
+        BufferedWriter fileWriter=  new BufferedWriter(new FileWriter("out.txt", true));
+        fileWriter.write(out);
+        fileWriter.flush();
+        fileWriter.close();
 
+        out +=  fuzzySystem.printOutput("out.txt");
+        //JOptionPane.showMessageDialog(this, out);
+        JOptionPane.showMessageDialog(null, out,"Output Result", JOptionPane.INFORMATION_MESSAGE);
         run.dispose();
         out= "";
     }
+
+//    public void showOut(String out){
+//        output = new JFrame("Output Result");
+//
+//    }
 
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == variables) {
@@ -328,6 +348,13 @@ public class GuiMenu extends JFrame implements ActionListener {
         }
         if (event.getSource() == runSimulation) {
             run();
+        }
+        if (event.getSource() == addCrispValues) {
+            try {
+                addCrispValuesAction();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
