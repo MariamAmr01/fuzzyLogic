@@ -5,9 +5,9 @@ import java.util.Vector;
 
 public class Main {
 
-    public static void readVar(FuzzySystem fuzzySystem) {
+    public static void readVar(FuzzySystem fuzzySystem, String path) {
         try {
-            FileReader variables = new FileReader("variables.txt");
+            FileReader variables = new FileReader(path);
             BufferedReader reader1 = new BufferedReader(variables);
 
             String line;
@@ -35,9 +35,9 @@ public class Main {
         }
     }
 
-    public static void readSets(FuzzySystem fuzzySystem) {
+    public static void readSets(FuzzySystem fuzzySystem, String path) {
         try {
-            FileReader sets = new FileReader("sets.txt");
+            FileReader sets = new FileReader(path);
             BufferedReader reader2 = new BufferedReader(sets);
 
             String line = "";
@@ -75,10 +75,10 @@ public class Main {
 
     }
 
-    public static void readRule(FuzzySystem fuzzySystem) {
+    public static void readRule(FuzzySystem fuzzySystem, String path) {
 
         try {
-            FileReader rules = new FileReader("rules.txt");
+            FileReader rules = new FileReader(path);
             BufferedReader reader3 = new BufferedReader(rules);
 
             String line;
@@ -143,13 +143,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        FuzzySystem fuzzySystem = new FuzzySystem();
-        readVar(fuzzySystem);
-        readSets(fuzzySystem);
-        readRule(fuzzySystem);
-
-        fuzzySystem.run();
-        fuzzySystem.printOutput();
+        new GuiRepresentation();
 
         //System.out.println("---------------------");
 

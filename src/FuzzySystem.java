@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Vector;
 
 public class FuzzySystem {
@@ -123,18 +125,23 @@ public class FuzzySystem {
 
     }
 
-    public void printOutput(){
-        System.out.println("Fuzzification => done");
-        System.out.println("Inference => done");
-        System.out.println("Defuzzification => done");
+    public String printOutput(String filePath){
+//        System.out.println("Fuzzification => done");
+//        System.out.println("Inference => done");
+//        System.out.println("Defuzzification => done");
+
 
         Vector<Integer> indexSets = new Vector<>();
-        for (int j = 0; j < variables.get(index).sets.size(); j++)
-        {
-            if(variables.get(index).sets.get(j).setRange.contains(variables.get(index).crispVal))
-            {
-                indexSets.add(j);
+        if(index!= -1) {
+            for (int j = 0; j < variables.get(index).sets.size(); j++) {
+                if (variables.get(index).sets.get(j).setRange.contains(variables.get(index).crispVal)) {
+                    indexSets.add(j);
+                }
             }
+        }
+        else
+        {
+            return "Files are empty or no output variables";
         }
 
         int indexMin = 0;
@@ -149,10 +156,20 @@ public class FuzzySystem {
                 minDis = dis;
             }
         }
+        try {
+            FileWriter fileWriter=  new FileWriter(filePath);
+            fileWriter.write("The predicted " + variables.get(index).sets.get(indexMin).varName + " is " +
+                    variables.get(index).sets.get(indexMin).setName + " (" + variables.get(index).crispVal + ")" );
+            fileWriter.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+//
+//        System.out.println("The predicted " + variables.get(index).sets.get(indexMin).varName + " is " +
+//                variables.get(index).sets.get(indexMin).setName + " (" + variables.get(index).crispVal + ")" );
 
-        System.out.println("The predicted " + variables.get(index).sets.get(indexMin).varName + " is " +
-                variables.get(index).sets.get(indexMin).setName + " (" + variables.get(index).crispVal + ")" );
-
-        System.out.println("===============================");
+       // System.out.println("===============================");
+        return"";
     }
 }
