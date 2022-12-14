@@ -13,23 +13,13 @@ public class GuiRepresentation extends JFrame implements ActionListener
 
     FuzzySystem fuzzySystem;
 
-    JButton browseVariables;
-    JButton browseSets;
-    JButton browseRules;
-
-    JButton saveOutputFile, addCrispValues;
-
-    JLabel browseLabel;
-    JLabel saveLabel;
-
+    JButton browseVariables, browseSets, browseRules, saveOutputFile, addCrispValues;
+    JLabel browseLabel, saveLabel, noteLabel;
     JFrame run;
-
     Vector<String> paths= new Vector<>();
     Vector<JTextField> textFields;
     Vector<Variable> vars;
-
-    String out = "";
-    String path;
+    String out = "", path;
     boolean browse, save, variable, set, rule;
 
     public GuiRepresentation(FuzzySystem fuzzySystem)  {
@@ -42,7 +32,7 @@ public class GuiRepresentation extends JFrame implements ActionListener
         paths.add("");
         paths.add("");
         paths.add("");
-        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         this.setSize(500, 400);
         this.setTitle("Fuzzy System");
         this.fuzzySystem = fuzzySystem;
@@ -66,20 +56,23 @@ public class GuiRepresentation extends JFrame implements ActionListener
 
         browseLabel = new JLabel();
         saveLabel = new JLabel();
+        noteLabel = new JLabel("Select ALL input files first to RUN");
 
         browseLabel.setBounds(150, 250, 1000, 40);
         saveLabel.setBounds(150, 300, 1000, 40);
-
+        noteLabel.setBounds(150, 10, 1000, 40);
 
         browseVariables.addActionListener(this);
         browseSets.addActionListener(this);
         browseRules.addActionListener(this);
 
         saveOutputFile.addActionListener(this);
+        saveOutputFile.setEnabled(false);
 
         this.add(browseVariables);
         this.add(browseSets);
         this.add(browseRules);
+        this.add(noteLabel);
 
         this.add(saveOutputFile);
 
@@ -99,9 +92,8 @@ public class GuiRepresentation extends JFrame implements ActionListener
         // Select text files only
         FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
         fileChooser.setFileFilter(filter);
-        fileChooser.setMultiSelectionEnabled(true);
 
-        // Set Default dirctory to the project dirctory
+        // Set Default directory to the project directory
         fileChooser.setCurrentDirectory(new File("."));
         int response = fileChooser.showOpenDialog(null);
 
@@ -128,6 +120,8 @@ public class GuiRepresentation extends JFrame implements ActionListener
             browseLabel.setVisible(true);
             saveLabel.setVisible(false);
 
+            if(variable && set && rule)
+                saveOutputFile.setEnabled(true);
         }
         else {
             browse = false;
@@ -219,22 +213,53 @@ public class GuiRepresentation extends JFrame implements ActionListener
             FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
             fileChooser.setFileFilter(filter);
 
+
             fileChooser.setCurrentDirectory(new File("."));
             int response = fileChooser.showSaveDialog(null);
 
             if (response == JFileChooser.APPROVE_OPTION) {
                 save = true;
                 path = fileChooser.getSelectedFile().getAbsolutePath();
-                saveLabel.setText("File Saved Successfully");
-                saveLabel.setVisible(true);
+
                 if (browse && save) {
                     browse = false;
                     save = false;
                     if (variable && rule && set) {
-                        Main.readVar(fuzzySystem, paths.get(0));
-                        Main.readSets(fuzzySystem, paths.get(1));
-                        Main.readRule(fuzzySystem, paths.get(2));
+                        if(!Main.readVar(fuzzySystem, paths.get(0)))
+                        {
+                            JOptionPane.showMessageDialog(null, "Invalid input variable, Please follow the structure \"" +
+                                            "variable’s name, type (IN/OUT) and range ([lower, upper])\"\n--> Example: proj_funding IN [0, 100]\n" +
+                                            "Please correct the variable input file and re-upload all input files :)",
+                                    "Variable Input Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        if(!Main.readSets(fuzzySystem, paths.get(1)))
+                        {
+                            JOptionPane.showMessageDialog(null, "Invalid input set or wrong variable name, Please follow the structure \n\"" +
+                                            "variable’s name\nfuzzy set name, type (TRI/TRAP) and values\nx\"\n--> Example:\nexp_level\nbeginner TRI 0 15 30\n" +
+                                            "intermediate TRI 15 30 45\n" +
+                                            "expert TRI 30 60 60\n" +
+                                            "x\n" +
+                                            "Please correct the set input file and re-upload all input files :)" +
+                                            "\n\nNote: Don't forget the 'x' after finishing the fuzzy set AND Check the variable name,\n" +
+                                            "the variable must be existed in variable input file.\nTRI MUST followed by 3 numbers\nTRAP MUST followed by 4 numbers" ,
+                                    "Set Input Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        if(!Main.readRule(fuzzySystem, paths.get(2))){
+                            JOptionPane.showMessageDialog(null, "Invalid rule or wrong input/output variable/set name, Please follow the structure \"" +
+                                            "IN_variable set operator IN_variable set => OUT_variable set\"\n--> Example:\nproj_funding high or exp_level expert => risk low\n" +
+                                            "Please correct the rule input file and re-upload all input files :)" +
+                                            "\n\nNote: the variable must be existed in variable input file, AND sets must be existed in set input file.",
+                                    "Rule Input Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
                         CreateRunFrame();
+
+                        variable = false;
+                        rule = false;
+                        set = false;
+                        saveOutputFile.setEnabled(false);
                     }
                 } else {
                     save = false;

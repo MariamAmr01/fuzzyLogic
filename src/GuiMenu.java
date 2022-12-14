@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.*;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 public class GuiMenu extends JFrame implements ActionListener {
 
@@ -19,7 +20,7 @@ public class GuiMenu extends JFrame implements ActionListener {
 
     public GuiMenu(FuzzySystem fuzzySystem) throws IOException {
         initComponents();
-        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         this.setSize(500, 400);
         this.setTitle("Fuzzy System");
         this.fuzzySystem = fuzzySystem;
@@ -173,6 +174,19 @@ public class GuiMenu extends JFrame implements ActionListener {
             newText = variablesText.getText().replace("] ", "]\n");
         }
 
+        String[] vars = newText.split("\n");
+        for (int i = 0; i < vars.length; i++) {
+
+            if(!Main.checkVriableInputPattern(vars[i])){
+                JOptionPane.showMessageDialog(null, "Invalid input variables, Please follow the structure for all variables\n\"" +
+                                "variable’s name, type (IN/OUT) and range ([lower, upper])\"\n--> Example:\nproj_funding IN [0, 100] exp_level IN [0, 60] risk OUT [0, 100]\n" +
+                                "Please correct the variable input and click Add again :)" +
+                                "\n\nNote: spaces are important for variable info,\nand for all variables you can either separate variables with a single space or do not add space between them",
+                        "Variables Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
         allVariables += newText;
         System.out.println(allVariables);
 
@@ -192,20 +206,39 @@ public class GuiMenu extends JFrame implements ActionListener {
     {
         String text = "";
         if(!varNameAdded){
+
             text = variableName.getText() + "\n";
             allsets+=text;
             variableName.setEditable(false);
             varNameAdded = true;
             setsText.setEditable(true);
+
         }else{
-            text = setsText.getText() + "\n";
-            allsets+=text;
-            setsText.setText("");
+
+            if(Main.checkSetInputPattern(setsText.getText()))
+            {
+                text = setsText.getText() + "\n";
+                allsets+=text;
+                setsText.setText("");
+            }
+            else
+            {
+
+                JOptionPane.showMessageDialog(null, "Invalid input set, Please follow the structure \n\"" +
+                                "fuzzy set name, type (TRI/TRAP) and values\nx\"\n--> Example:\nbeginner TRI 0 15 30\n" +
+                                "Please correct the set input and click Add :)" +
+                                "\n\nNote: " +
+                                "TRI MUST followed by 3 numbers\nTRAP MUST followed by 4 numbers" ,
+                        "Set Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+
         }
+
     }
 
     public void submitSetsAction() throws IOException
     {
+
         allsets += "x\n";
         BufferedWriter writer1 = new BufferedWriter(new FileWriter("sets.txt", true));
         writer1.write(allsets);
@@ -221,6 +254,14 @@ public class GuiMenu extends JFrame implements ActionListener {
 
     public void addRuleInputAction()
     {
+        if(!Main.checkRuleInputPattern(rulesText.getText())){
+            JOptionPane.showMessageDialog(null, "Invalid rule or wrong input/output variable/set name, Please follow the structure \"" +
+                            "IN_variable set operator IN_variable set => OUT_variable set\"\n--> Example:\nproj_funding high or exp_level expert => risk low\n" +
+                            "Please correct the rule input and click Add :)" +
+                            "\n\nNote: Don't forget the operator, the variable must be existed in variable input file, AND sets must be existed in set input file.",
+                    "Rule Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         String text = rulesText.getText() + "\n";
         allRules+=text;
         rulesText.setText("");
@@ -248,7 +289,14 @@ public class GuiMenu extends JFrame implements ActionListener {
     public void run(){
 
         Main.readVar(fuzzySystem, "variables.txt");
-        Main.readSets(fuzzySystem, "sets.txt");
+        // Invalid Variable name
+        if(!Main.readSets(fuzzySystem, "sets.txt")){
+            JOptionPane.showMessageDialog(null, "Wrong variable name\nPlease enter the correct variable name and click Add again :)\n\"" +
+                        "\n\nNote:" +
+                        "the variable must be existed (Entered at Add variable first)" ,
+                "Wrong Variable Name Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         Main.readRule(fuzzySystem, "rules.txt");
 
         run = new JFrame();
@@ -298,16 +346,11 @@ public class GuiMenu extends JFrame implements ActionListener {
         fileWriter.close();
 
         out +=  fuzzySystem.printOutput("out.txt");
-        //JOptionPane.showMessageDialog(this, out);
+
         JOptionPane.showMessageDialog(null, out,"Output Result", JOptionPane.INFORMATION_MESSAGE);
         run.dispose();
         out= "";
     }
-
-//    public void showOut(String out){
-//        output = new JFrame("Output Result");
-//
-//    }
 
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == variables) {
@@ -352,6 +395,10 @@ public class GuiMenu extends JFrame implements ActionListener {
         if (event.getSource() == addCrispValues) {
             try {
                 addCrispValuesAction();
+                variablesAdded= false;
+                rulesAdded = false;
+                setsAdded = false;
+                runSimulation.setEnabled(false);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
