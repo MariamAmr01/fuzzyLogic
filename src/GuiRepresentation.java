@@ -221,52 +221,48 @@ public class GuiRepresentation extends JFrame implements ActionListener
                 save = true;
                 path = fileChooser.getSelectedFile().getAbsolutePath();
 
-                if (browse && save) {
-                    browse = false;
-                    save = false;
-                    if (variable && rule && set) {
-                        if(!Main.readVar(fuzzySystem, paths.get(0)))
-                        {
-                            JOptionPane.showMessageDialog(null, "Invalid input variable, Please follow the structure \"" +
-                                            "variable’s name, type (IN/OUT) and range ([lower, upper])\"\n--> Example: proj_funding IN [0, 100]\n" +
-                                            "Please correct the variable input file and re-upload all input files :)",
-                                    "Variable Input Error", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        if(!Main.readSets(fuzzySystem, paths.get(1)))
-                        {
-                            JOptionPane.showMessageDialog(null, "Invalid input set or wrong variable name, Please follow the structure \n\"" +
-                                            "variable’s name\nfuzzy set name, type (TRI/TRAP) and values\nx\"\n--> Example:\nexp_level\nbeginner TRI 0 15 30\n" +
-                                            "intermediate TRI 15 30 45\n" +
-                                            "expert TRI 30 60 60\n" +
-                                            "x\n" +
-                                            "Please correct the set input file and re-upload all input files :)" +
-                                            "\n\nNote: Don't forget the 'x' after finishing the fuzzy set AND Check the variable name,\n" +
-                                            "the variable must be existed in variable input file.\nTRI MUST followed by 3 numbers\nTRAP MUST followed by 4 numbers" ,
-                                    "Set Input Error", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        if(!Main.readRule(fuzzySystem, paths.get(2))){
-                            JOptionPane.showMessageDialog(null, "Invalid rule or wrong input/output variable/set name, Please follow the structure \"" +
-                                            "IN_variable set operator IN_variable set => OUT_variable set\"\n--> Example:\nproj_funding high or exp_level expert => risk low\n" +
-                                            "Please correct the rule input file and re-upload all input files :)" +
-                                            "\n\nNote: the variable must be existed in variable input file, AND sets must be existed in set input file.",
-                                    "Rule Input Error", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        CreateRunFrame();
 
-                        variable = false;
-                        rule = false;
-                        set = false;
-                        saveOutputFile.setEnabled(false);
+                if (variable && rule && set) {
+                    String name = fuzzySystem.name;
+                    String descrip = fuzzySystem.description;
+
+                    fuzzySystem = new FuzzySystem();
+
+                    fuzzySystem.name = name;
+                    fuzzySystem.description = descrip;
+
+                    if(!Main.readVar(fuzzySystem, paths.get(0)))
+                    {
+                        JOptionPane.showMessageDialog(null, "Invalid input variable, Please follow the structure \"" +
+                                        "variable’s name, type (IN/OUT) and range ([lower, upper])\"\n--> Example: proj_funding IN [0, 100]\n" +
+                                        "Please correct the variable input file and re-upload all input files :)",
+                                "Variable Input Error", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
-                } else {
-                    save = false;
-                    saveLabel.setText("Please Select the place of the input file");
-                    saveLabel.setVisible(true);
-                }
+                    if(!Main.readSets(fuzzySystem, paths.get(1)))
+                    {
+                        JOptionPane.showMessageDialog(null, "Invalid input set or wrong variable name, Please follow the structure \n\"" +
+                                        "variable’s name\nfuzzy set name, type (TRI/TRAP) and values\nx\"\n--> Example:\nexp_level\nbeginner TRI 0 15 30\n" +
+                                        "intermediate TRI 15 30 45\n" +
+                                        "expert TRI 30 60 60\n" +
+                                        "x\n" +
+                                        "Please correct the set input file and re-upload all input files :)" +
+                                        "\n\nNote: Don't forget the 'x' after finishing the fuzzy set AND Check the variable name,\n" +
+                                        "the variable must be existed in variable input file.\nTRI MUST followed by 3 numbers\nTRAP MUST followed by 4 numbers" ,
+                                "Set Input Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if(!Main.readRule(fuzzySystem, paths.get(2))){
+                        JOptionPane.showMessageDialog(null, "Invalid rule or wrong input/output variable/set name, Please follow the structure \"" +
+                                        "IN_variable set operator IN_variable set => OUT_variable set\"\n--> Example:\nproj_funding high or exp_level expert => risk low\n" +
+                                        "Please correct the rule input file and re-upload all input files :)" +
+                                        "\n\nNote: the variable must be existed in variable input file, AND sets must be existed in set input file.",
+                                "Rule Input Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    CreateRunFrame();
 
+                }
 
             } else {
                 save = false;

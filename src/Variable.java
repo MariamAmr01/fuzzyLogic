@@ -43,7 +43,6 @@ public class Variable {
         this.range = new Range(range);
         this.sets = new Vector<>();
         this.input = input;
-//        this.crispVal = crispVal;
     }
     public Variable()
     {
@@ -91,7 +90,7 @@ public class Variable {
             {
                 sets.get(i).mean=0;
             }
-            //System.out.println(sets.get(i).mean);
+
 
         }
 

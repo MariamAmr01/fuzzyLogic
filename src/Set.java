@@ -71,7 +71,6 @@ public class Set {
         this.values = s.values;
         this.mean = s.mean;
     }
-
     // For output var
     public float calculateC(){
         float sum = 0;

@@ -25,12 +25,10 @@ public class GuiMenu extends JFrame implements ActionListener {
         this.setTitle("Fuzzy System");
         this.fuzzySystem = fuzzySystem;
 
-        /// --->
         new FileWriter("out.txt", false).close();
         new FileWriter("variables.txt", false).close();
         new FileWriter("sets.txt", false).close();
         new FileWriter("rules.txt", false).close();
-
 
     }
 
@@ -188,7 +186,6 @@ public class GuiMenu extends JFrame implements ActionListener {
         }
 
         allVariables += newText;
-        System.out.println(allVariables);
 
         BufferedWriter writer1 = new BufferedWriter(new FileWriter("variables.txt", true));
         writer1.write(allVariables);
@@ -287,6 +284,13 @@ public class GuiMenu extends JFrame implements ActionListener {
     }
 
     public void run(){
+        String name = fuzzySystem.name;
+        String descrip = fuzzySystem.description;
+
+        fuzzySystem = new FuzzySystem();
+
+        fuzzySystem.name = name;
+        fuzzySystem.description = descrip;
 
         Main.readVar(fuzzySystem, "variables.txt");
         // Invalid Variable name
@@ -395,10 +399,6 @@ public class GuiMenu extends JFrame implements ActionListener {
         if (event.getSource() == addCrispValues) {
             try {
                 addCrispValuesAction();
-                variablesAdded= false;
-                rulesAdded = false;
-                setsAdded = false;
-                runSimulation.setEnabled(false);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

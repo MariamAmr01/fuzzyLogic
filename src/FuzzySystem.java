@@ -8,7 +8,7 @@ public class FuzzySystem {
     public Vector<Rule> rules;
     String name;
     String description;
-    //->
+
     int index = -1;
 
     public FuzzySystem()
@@ -25,6 +25,7 @@ public class FuzzySystem {
         }
         return -1;
     }
+
 
     public Vector<Variable> getVariables() {
         Vector<Variable> vars = new Vector<>();
@@ -139,10 +140,6 @@ public class FuzzySystem {
     }
 
     public String printOutput(String filePath){
-//        System.out.println("Fuzzification => done");
-//        System.out.println("Inference => done");
-//        System.out.println("Defuzzification => done");
-
 
         Vector<Integer> indexSets = new Vector<>();
         if(index!= -1) {
@@ -181,11 +178,7 @@ public class FuzzySystem {
         catch (IOException e) {
             e.printStackTrace();
         }
-//
-//        System.out.println("The predicted " + variables.get(index).sets.get(indexMin).varName + " is " +
-//                variables.get(index).sets.get(indexMin).setName + " (" + variables.get(index).crispVal + ")" );
 
-       // System.out.println("===============================");
         return"";
     }
 }

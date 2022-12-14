@@ -24,7 +24,7 @@ public class Main {
     public static boolean checkRuleInputPattern(String line){
         // Follow the pattern -> IN_variable set operator IN_variable set => OUT_variable set
         // Regular expression : accept variable name, set, space, operator, variable name, set, space, => , space, out variable name, set
-        String rulePattern = "[a-zA-z_]+\s+[a-zA-z_]+\s+((or|ar_not|and|and_not|not)\s+[a-zA-z_]+\s+[a-zA-z_]+\s+)+=>\s+[a-zA-z_]+\s+[a-zA-z_]+";
+        String rulePattern = "[a-zA-z_]+\s+[a-zA-z_]+\s+((or|ar_not|and|and_not)\s+[a-zA-z_]+\s+[a-zA-z_]+\s+)+=>\s+[a-zA-z_]+\s+[a-zA-z_]+";
         return Pattern.matches(rulePattern, line);
     }
     public static boolean readVar(FuzzySystem fuzzySystem, String path) {
@@ -194,19 +194,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-
-        //TODO Check Multiple times of run && Check errors
-
         new MainGUI();
-//       new GuiRepresentation();
-
-        //new GuiMenu();
-        //System.out.println("---------------------");
-
-//        for (int i = 0; i < fuzzySystem.variables.size(); i++) {
-//
-//            System.out.println(fuzzySystem.variables.get(i));
-//        }
     }
 
 }
