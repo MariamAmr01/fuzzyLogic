@@ -154,22 +154,21 @@ public class FuzzySystem {
             return "Files are empty or no output variables";
         }
 
-        int indexMin = 0;
+        int indexMax = 0;
         String str = "";
-        float minDis = Float.MAX_VALUE;
+        float maxMembership = Float.MIN_VALUE;
         for (int i = 0; i < indexSets.size(); i++)
         {
-            float dis = Math.abs(variables.get(index).sets.get(indexSets.get(i)).centroid - variables.get(index).crispVal);
-
-            if(dis < minDis){
-                indexMin = indexSets.get(i);
-                minDis = dis;
+            float mean= variables.get(index).sets.get(indexSets.get(i)).mean;
+            if(mean > maxMembership){
+                indexMax= indexSets.get(i);
+                maxMembership = mean;
             }
         }
         try {
             BufferedWriter fileWriter=  new BufferedWriter(new FileWriter(filePath, true));
-            str = "The predicted " + variables.get(index).sets.get(indexMin).varName + " is " +
-                    variables.get(index).sets.get(indexMin).setName + " (" + variables.get(index).crispVal + ")\n";
+            str = "The predicted " + variables.get(index).sets.get(indexMax).varName + " is " +
+                    variables.get(index).sets.get(indexMax).setName + " (" + variables.get(index).crispVal + ")\n";
             fileWriter.write(str);
             fileWriter.flush();
             fileWriter.close();
